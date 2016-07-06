@@ -35,11 +35,14 @@ choco install -y notepadplusplus.install visualstudiocode
 choco install -y netfx-4.5.1-devpack netfx-4.5.2-devpack
  
 choco install -y visualstudiocommunity2013
+choco install -y vs2013.5
+choco install -y visualstudio2013-sdk
 choco install -y vsredist2013 windows-sdk-8.1 
 
 choco install -y windows-sdk-10.0
 choco install -y dotnet4.6-targetpack microsoft-build-tools 
 choco install -y dotnet4.6.1-devpack
+
 
 ```
 
@@ -51,3 +54,13 @@ choco install -y mssqlserver2012express
 // only ssme ??? 
 choco install -y sql-server-management-studio
 ```
+
+### 8. IIS
+
+MVC5 fix:
+C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies\
+C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET Web Pages\v2.0\Assemblies\
+
+MSBUILD 14.0\
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\
+Common7\IDE\CommonExtensions\Microsoft\TestWindow\
