@@ -5,7 +5,8 @@ Setup tasks for empty Windows 10
 2. download chrome  
 ### 3. install choco  
 
-https://chocolatey.org/install
+https://chocolatey.org/install 
+
 ```
 PowerShell.exe -ExecutionPolicy Unrestricted
 run cmd as admin
@@ -15,7 +16,7 @@ iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.p
 
 ### 4. choco install tasks  
 
-``
+```
 choco install -y conemu
 choco install -y git kdiff3
 ```
