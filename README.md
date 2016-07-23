@@ -18,8 +18,11 @@ iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.p
 `choco install -y conemu`
 finally open real console conemu 
 ```
-choco install -y git kdiff3
-choco install -y git-credential-manager-for-windows
+choco feature list
+choco feature enable -n=allowGlobalConfirmation
+
+choco install git kdiff3
+choco install git-credential-manager-for-windows
 ```
 gitextensions install manually, no visual studio plugins please
 
@@ -31,17 +34,17 @@ TEMP=c:\Temp
 ### 6. Visual Studio
 
 ```
-choco install -y notepadplusplus.install visualstudiocode
-choco install -y netfx-4.5.1-devpack netfx-4.5.2-devpack
+choco install notepadplusplus.install visualstudiocode
+choco install netfx-4.5.1-devpack netfx-4.5.2-devpack
  
-choco install -y visualstudiocommunity2013
-choco install -y vs2013.5
-choco install -y visualstudio2013-sdk
-choco install -y vsredist2013 windows-sdk-8.1 
+choco install visualstudiocommunity2013
+choco install vs2013.5
+choco install visualstudio2013-sdk
+choco install vsredist2013 windows-sdk-8.1 
 
-choco install -y windows-sdk-10.0
-choco install -y dotnet4.6-targetpack microsoft-build-tools 
-choco install -y dotnet4.6.1-devpack
+choco install windows-sdk-10.0
+choco install dotnet4.6-targetpack microsoft-build-tools 
+choco install dotnet4.6.1-devpack
 
 
 ```
@@ -50,9 +53,9 @@ choco install -y dotnet4.6.1-devpack
 
 Sqlserver 1.04 GB, SSME 2012 825MB :( 
 ```
-choco install -y mssqlserver2012express
+choco install mssqlserver2012express
 // only ssme ??? 
-choco install -y sql-server-management-studio
+choco install sql-server-management-studio
 ```
 
 ### 8. IIS
