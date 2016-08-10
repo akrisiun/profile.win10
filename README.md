@@ -67,3 +67,5 @@ C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET Web Pages\v2.0\Assemblies\
 MSBUILD 14.0\
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\
 Common7\IDE\CommonExtensions\Microsoft\TestWindow\
+
+Docker: https://github.com/phusion/baseimage-docker#running_startup_scripts
