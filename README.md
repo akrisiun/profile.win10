@@ -36,7 +36,9 @@ TEMP=c:\Temp
 ```
 choco install notepadplusplus.install visualstudiocode
 choco install netfx-4.5.1-devpack netfx-4.5.2-devpack
- 
+
+# choco install -f -y netfx-4.5.1-devpack netfx-4.5.2-devpack dotnet4.6-targetpack microsoft-build-tools dotnet4.6.1-devpack
+
 choco install visualstudiocommunity2013
 choco install vs2013.5
 choco install visualstudio2013-sdk
@@ -53,7 +55,7 @@ choco install dotnet4.6.1-devpack
 
 Sqlserver 1.04 GB, SSME 2012 825MB :( 
 ```
-choco install mssqlserver2012express
+choco install mssqlserver2012express sql-server-management-studio
 // only ssme ??? 
 choco install sql-server-management-studio
 ```
