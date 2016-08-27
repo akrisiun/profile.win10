@@ -2,6 +2,8 @@
 
 https://msdn.microsoft.com/en-us/virtualization/windowscontainers/docker/configure_docker_daemon
 
+https://github.com/Microsoft/Virtualization-Documentation/issues/358#issuecomment-239872014
+
 >@powershell
 ```
 New-Item -Type Directory -Path 'C:\Program Files\docker\'
@@ -23,3 +25,4 @@ Start-Service Docker
 ```
 
 Get-EventLog -LogName Application -After (Get-Date).AddMinutes(-50) | Sort-Object Time
+Get-EventLog -After (Get-Date).AddMinutes(-60) | Sort-Object Time
