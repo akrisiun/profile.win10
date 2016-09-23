@@ -70,4 +70,14 @@ MSBUILD 14.0\
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\
 Common7\IDE\CommonExtensions\Microsoft\TestWindow\
 
+### Virtual machines
+
 Docker: https://github.com/phusion/baseimage-docker#running_startup_scripts
+
+https://github.com/tmatilai/vagrant-proxyconf
+
+Vagrant proxy
+vagrant plugin install ./vagrant-proxyconf*.gem --verbose
+
+vagrant plugin install vagrant-proxyconf
+vagrant plugin install vagrant-omnibus
