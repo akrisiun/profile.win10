@@ -1,0 +1,1 @@
+c:\bin\nano\nano.exe %1 %2 %3

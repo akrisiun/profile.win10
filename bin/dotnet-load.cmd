@@ -1,0 +1,1 @@
+dotnet run C:\bin\loader\Loader.dll %1
