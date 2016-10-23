@@ -1,0 +1,1 @@
+"c:\Program Files\Git\bin\git.exe" %1 %2 %3 %4 %5
