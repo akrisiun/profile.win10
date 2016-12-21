@@ -28,8 +28,16 @@ gitextensions install manually, no visual studio plugins please
 
 ### 5. setup PATH, TEMP
 
+```
 PATH=c:\bin;c:\System;c:\Program Files\Git\bin\;d:\tools;%USERPROFILE%\AppData\Local\Microsoft\WindowsApps;C:\Program Files\kdiff3
 TEMP=c:\Temp
+```
+
+GIT:
+```
+git config core.whitespace nowarn
+git config core.filemode false
+```
 
 ### 6. Visual Studio
 
