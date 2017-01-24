@@ -1,3 +1,6 @@
+Other links:  
+[powershell](powershell.md)
+
 ## profile.win10
 Setup tasks for empty Windows 10
 

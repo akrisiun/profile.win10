@@ -1,0 +1,4 @@
+*.bak
+Packages/
+.vs*/
+.nuget/
