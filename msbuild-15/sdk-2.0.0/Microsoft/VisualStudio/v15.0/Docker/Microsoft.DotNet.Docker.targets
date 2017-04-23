@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+***********************************************************************************************
+Microsoft.DotNet.Docker.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--
+  ***********************************************************************************************
+
+  Docker Common Properties
+
+  ***********************************************************************************************
+  -->
+
+  <PropertyGroup>
+    <DockerBuildTasksAssembly>$(MSBuildThisFileDirectory)\Microsoft.DotNet.Docker.BuildTasks.dll</DockerBuildTasksAssembly>
+    <DockerIntermediateOutputPath>obj\Docker</DockerIntermediateOutputPath>
+    <DockerPublishDirectory>$(DockerIntermediateOutputPath)\publish</DockerPublishDirectory>
+  </PropertyGroup>
+
+  <!--
+  ***********************************************************************************************
+
+  Docker Common Targets
+
+  ***********************************************************************************************
+  -->
+
+  <UsingTask TaskName="ComposeBuild" AssemblyFile="$(DockerBuildTasksAssembly)" />
+  <UsingTask TaskName="ResolveAppType" AssemblyFile="$(DockerBuildTasksAssembly)" />
+  <UsingTask TaskName="ResolveTargetFramework" AssemblyFile="$(DockerBuildTasksAssembly)" />
+
+  <!--
+  ***********************************************************************************************
+
+  TARGET : DockerComposeBuild
+
+  ***********************************************************************************************
+  -->
+
+  <Target Name="DockerComposeBuild">
+    <PropertyGroup>
+      <_DockerDevelopmentMode Condition=" '$(DockerDevelopmentMode)' != '' ">$(DockerDevelopmentMode)</_DockerDevelopmentMode>
+      <_DockerDevelopmentMode Condition=" '$(_DockerDevelopmentMode)' == '' ">Regular</_DockerDevelopmentMode>
+    </PropertyGroup>
+
+    <ComposeBuild DockerComposeProjectPath="$(DockerComposeProjectPath)"
+                  DockerDevelopmentMode="$(_DockerDevelopmentMode)"
+                  ProjectPath="$(MSBuildProjectFullPath)"
+                  BuildSource="$(DockerComposeBuildSource)"
+                  NoCache="$(DockerComposeBuildNoCache)"
+                  Condition=" '$(_DockerDevelopmentMode)' == 'Regular' " />
+  </Target>
+
+  <!--
+  ***********************************************************************************************
+
+  TARGET : DockerPackageService
+
+  ***********************************************************************************************
+  -->
+
+  <Target Name="DockerPackageService">
+    <ResolveAppType OutputType="$(OutputType)" ProjectCapability="@(ProjectCapability)" ProjectTypeGuids="$(ProjectTypeGuids)">
+      <Output TaskParameter="AppType" PropertyName="DockerAppType" />
+    </ResolveAppType>
+
+    <ResolveTargetFramework ProjectCapability="@(ProjectCapability)">
+      <Output TaskParameter="TargetFramework" PropertyName="DockerTargetFramework" />
+    </ResolveTargetFramework>
+
+    <!-- ASP.NET Core -->
+    <MSBuild Projects="$(MSBuildProjectFullPath)"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);
+                         Platform=$(Platform);
+                         WebPublishMethod=FileSystem;
+                         DeployOnBuild=True;
+                         PublishUrl=$(DockerPublishDirectory)"
+             Condition=" '$(DockerAppType)' == 'AspNetCore' " />
+
+    <!-- ASP.NET -->
+    <MSBuild Projects="$(MSBuildProjectFullPath)"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);
+                         Platform=$(Platform);
+                         BuildingInsideVisualStudio=False;
+                         WebPublishMethod=FileSystem;
+                         DeployTarget=WebPublish;
+                         DeployOnBuild=True;
+                         PublishUrl=$(DockerPublishDirectory)"
+             Condition=" '$(DockerAppType)' == 'AspNet' " />
+
+    <!-- Console on .NET Core -->
+    <MSBuild Projects="$(MSBuildProjectFullPath)"
+             Targets="Publish"
+             Properties="Configuration=$(Configuration);
+                         Platform=$(Platform);
+                         PublishDir=$(DockerPublishDirectory)"
+             Condition=" '$(DockerAppType)' == 'Console' And '$(DockerTargetFramework)' == 'DotNetCore' " />
+
+    <!-- Console on .NET Framework -->
+    <MSBuild Projects="$(MSBuildProjectFullPath)"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);
+                         Platform=$(Platform)"
+             Condition=" '$(DockerAppType)' == 'Console' And '$(DockerTargetFramework)' == 'DotNetFramework' " />
+    <ItemGroup>
+      <DockerOutputFiles Include="$(OutputPath)\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DockerOutputFiles)"
+          DestinationFiles="@(DockerOutputFiles->'$(DockerPublishDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"
+          Condition=" '$(DockerAppType)' == 'Console' And '$(DockerTargetFramework)' == 'DotNetFramework' " />
+  </Target>
+
+</Project>
