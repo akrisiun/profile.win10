@@ -59,7 +59,7 @@ choco install windows-sdk-10.0
 choco install dotnet4.6-targetpack microsoft-build-tools 
 choco install dotnet4.6.1-devpack
 
-
+choco install dotnetcore-sdk -y
 ```
 
 ### 7. SQL Server 
