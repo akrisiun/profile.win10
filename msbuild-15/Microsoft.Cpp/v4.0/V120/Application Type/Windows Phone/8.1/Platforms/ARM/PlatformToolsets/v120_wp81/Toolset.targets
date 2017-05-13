@@ -1,0 +1,35 @@
+﻿<!--
+***********************************************************************************************
+Toolset.targets for Microsoft.Cpp\ARM\v120_wp81
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+This file defines the steps/targets required to build Visual C++ (version 11.0) projects
+specifically on ARM platforms.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)ImportBefore\*.targets" Condition="Exists('$(MSBuildThisFileDirectory)ImportBefore')" />
+
+  <ItemGroup Condition="'$(ConfigurationType)' == 'Application' or '$(TestApplication)' == 'true'">
+    <AppHostDebuggerPages Include="$(MSBuildThisFileDirectory)\$(LangID)\WindowsPhoneDeviceDebugger.xml" />
+  </ItemGroup>
+  
+  <!-- Tools that always show up in the IDE property pages (no Manifest tool for Phone) -->
+  <ItemGroup>
+    <ProjectTools Condition="'$(ConfigurationType)' == 'Application' or '$(ConfigurationType)' == 'DynamicLibrary'" Include="Link"/>
+    <ProjectTools Condition="'$(ConfigurationType)' == 'StaticLibrary'" Include="Lib"/>
+    <ProjectTools Include="Bscmake"/>
+    <ProjectTools Include="Xdcmake"/>
+    <ProjectTools Include="CustomBuildStep"/>
+  </ItemGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.CppCommon.targets" />
+
+  <Import Project="$(MSBuildThisFileDirectory)ImportAfter\*.targets" Condition="Exists('$(MSBuildThisFileDirectory)ImportAfter')" />
+</Project>

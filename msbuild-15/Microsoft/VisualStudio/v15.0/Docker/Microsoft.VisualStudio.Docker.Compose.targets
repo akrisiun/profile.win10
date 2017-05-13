@@ -1,0 +1,227 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+***********************************************************************************************
+Microsoft.VisualStudio.Docker.Compose.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--
+  ***********************************************************************************************
+
+  Docker Compose Project Properties
+
+  ***********************************************************************************************
+  -->
+
+  <PropertyGroup>
+    <!-- Turn off capabilities from Microsoft.Common.CurrentVersions.targets and explicitly include the ones we want. -->
+    <DefineCommonItemSchemas>false</DefineCommonItemSchemas>
+    <DefineCommonCapabilities>false</DefineCommonCapabilities>
+    <DefineCommonReferenceSchemas>false</DefineCommonReferenceSchemas>
+
+    <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
+  </PropertyGroup>
+
+  <!-- Project capabilities -->
+  <ItemGroup>
+    <ProjectCapability Include="DockerCompose" />
+    <ProjectCapability Include="ProjectConfigurationsDeclaredAsItems" />
+  </ItemGroup>
+
+  <!-- Describes the rules files used by CPS to represent the project -->
+  <Choose>
+    <When Condition=" ( '$(LangName)' == 'en-US' ) OR ( '$(LangName)' == '' ) ">
+      <PropertyGroup>
+        <RulesDirectory>$(MSBuildThisFileDirectory)Rules</RulesDirectory>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <RulesDirectory>$(MSBuildThisFileDirectory)Rules\$(LangName)</RulesDirectory>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <ItemGroup>
+    <PropertyPageSchema Include="$(RulesDirectory)\DebuggerGeneral.xaml">
+      <Context>Project</Context>
+    </PropertyPageSchema>
+    <PropertyPageSchema Include="$(RulesDirectory)\General.xaml">
+      <Context>Project</Context>
+    </PropertyPageSchema>
+    <PropertyPageSchema Include="$(RulesDirectory)\None.xaml">
+      <Context>File;BrowseObject</Context>
+    </PropertyPageSchema>
+    <PropertyPageSchema Include="$(RulesDirectory)\ProjectDebugger.xaml">
+      <Context>Project</Context>
+    </PropertyPageSchema>
+    <PropertyPageSchema Include="$(RulesDirectory)\ProjectItemsSchema.xaml">
+      <Context>Project</Context>
+    </PropertyPageSchema>
+  </ItemGroup>
+
+  <!--
+  ***********************************************************************************************
+
+  Docker Compose Project Targets
+
+  ***********************************************************************************************
+  -->
+
+  <UsingTask TaskName="CleanWorkspace" AssemblyFile="$(DockerBuildTasksAssembly)" />
+  <UsingTask TaskName="EnsureClrDbgExists" AssemblyFile="$(DockerBuildTasksAssembly)" />
+  <UsingTask TaskName="EnsureMsVsMonExists" AssemblyFile="$(DockerBuildTasksAssembly)" />
+  <UsingTask TaskName="GetServiceReferences" AssemblyFile="$(DockerBuildTasksAssembly)" />
+  <UsingTask TaskName="PrepareForBuild" AssemblyFile="$(DockerBuildTasksAssembly)" />
+  <UsingTask TaskName="PrepareForLaunch" AssemblyFile="$(DockerBuildTasksAssembly)" />
+
+  <PropertyGroup>
+    <BuildDependsOn>
+      DockerSetDevelopmentMode;
+      DockerPrepareForBuild;
+      DockerGetServiceReferences;
+      DockerBuildServiceReferences;
+      $(BuildDependsOn);
+      DockerComposeBuild;
+      DockerPrepareForLaunch;
+    </BuildDependsOn>
+    <CleanDependsOn>
+      DockerSetDevelopmentMode;
+      DockerCleanWorkspace;
+      $(CleanDependsOn);
+      DockerGetServiceReferences;
+      DockerCleanServiceReferences;
+    </CleanDependsOn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DockerComposeProjectPath>$(MSBuildProjectFullPath)</DockerComposeProjectPath>
+  </PropertyGroup>
+
+  <!--
+  ***********************************************************************************************
+
+  TARGET : DockerSetDevelopmentMode
+
+  ***********************************************************************************************
+  -->
+
+  <Target Name="DockerSetDevelopmentMode">
+    <PropertyGroup Condition=" '$(DockerDevelopmentMode)' == '' ">
+      <DockerDevelopmentMode Condition=" '$(Configuration)' == 'Debug' ">Fast</DockerDevelopmentMode>
+      <DockerDevelopmentMode Condition=" '$(DockerDevelopmentMode)' == '' ">Regular</DockerDevelopmentMode>
+    </PropertyGroup>
+  </Target>
+
+  <!--
+  ***********************************************************************************************
+
+  TARGET : DockerGetServiceReferences
+
+  ***********************************************************************************************
+  -->
+
+  <Target Name="DockerGetServiceReferences">
+    <ItemGroup>
+      <DockerServiceReference Remove="*" />
+    </ItemGroup>
+    <GetServiceReferences DockerComposeProjectPath="$(DockerComposeProjectPath)"
+                          DockerDevelopmentMode="$(DockerDevelopmentMode)"
+                          SolutionPath="$(SolutionPath)">
+      <Output TaskParameter="ServiceReferences" ItemName="DockerServiceReference" />
+    </GetServiceReferences>
+  </Target>
+
+  <!--
+  ***********************************************************************************************
+
+  TARGET : DockerPrepareForBuild
+
+  ***********************************************************************************************
+  -->
+
+  <Target Name="DockerPrepareForBuild">
+    <PrepareForBuild DockerComposeProjectPath="$(DockerComposeProjectPath)"
+                     DockerDevelopmentMode="$(DockerDevelopmentMode)" />
+  </Target>
+
+  <!--
+  ***********************************************************************************************
+
+  TARGET : DockerBuildServiceReferences
+
+  ***********************************************************************************************
+  -->
+
+  <Target Name="DockerBuildServiceReferences">
+    <PropertyGroup>
+      <DockerServiceReferenceTarget Condition=" '$(DockerDevelopmentMode)' == 'Regular' ">DockerPackageService</DockerServiceReferenceTarget>
+      <DockerServiceReferenceTarget Condition=" '$(DockerServiceReferenceTarget)' == '' ">Build</DockerServiceReferenceTarget>
+    </PropertyGroup>
+    <MSBuild Projects="@(DockerServiceReference)"
+             Targets="$(DockerServiceReferenceTarget)"
+             Properties="Configuration=$(Configuration);Platform=$(Platform)"
+             Condition=" '@(DockerServiceReference)' != '' " />
+  </Target>
+
+  <!--
+  ***********************************************************************************************
+
+  TARGET : DockerPrepareForLaunch
+
+  ***********************************************************************************************
+  -->
+
+  <Target Name="DockerPrepareForLaunch" Condition=" Exists('$(DockerIntermediateOutputPath)\launch.sem') ">
+    <EnsureClrDbgExists DockerComposeProjectPath="$(DockerComposeProjectPath)"
+                        DockerDevelopmentMode="$(DockerDevelopmentMode)" />
+
+    <EnsureMsVsMonExists DockerComposeProjectPath="$(DockerComposeProjectPath)"
+                         DockerDevelopmentMode="$(DockerDevelopmentMode)"
+                         SourceDirectory="$(DevEnvDir)Remote Debugger" />
+
+    <PrepareForLaunch DockerComposeProjectPath="$(DockerComposeProjectPath)"
+                      DockerDevelopmentMode="$(DockerDevelopmentMode)" />
+  </Target>
+
+  <!--
+  ***********************************************************************************************
+
+  TARGET : DockerCleanWorkspace
+
+  ***********************************************************************************************
+  -->
+
+  <Target Name="DockerCleanWorkspace">
+    <PropertyGroup>
+      <DockerComposeBuildNoCache>True</DockerComposeBuildNoCache>
+    </PropertyGroup>
+    <CleanWorkspace DockerComposeProjectPath="$(DockerComposeProjectPath)"
+                    DockerDevelopmentMode="$(DockerDevelopmentMode)" />
+  </Target>
+
+  <!--
+  ***********************************************************************************************
+
+  TARGET : DockerCleanServiceReferences
+
+  ***********************************************************************************************
+  -->
+
+  <Target Name="DockerCleanServiceReferences">
+    <MSBuild Projects="@(DockerServiceReference)"
+             Targets="Clean"
+             Properties="Configuration=$(Configuration);Platform=$(Platform)"
+             Condition=" '@(DockerServiceReference)' != '' " />
+  </Target>
+
+</Project>

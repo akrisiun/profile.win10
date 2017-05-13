@@ -1,0 +1,22 @@
+﻿<!--
+***********************************************************************************************
+Microsoft.Cpp.Common.props 
+
+Common properties for v110 toolsets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TargetPlatformIdentifier>Windows Phone</TargetPlatformIdentifier>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <VCInstallDir_110 Condition="'$(VCInstallDir_110)' == ''">$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\11.0\Setup\VC', 'ProductDir', null, RegistryView.Registry32))</VCInstallDir_110>
+    <WP80ToolSetPath>$(VCInstallDir_110)WPSDK\WP80\lib</WP80ToolSetPath>
+  </PropertyGroup>
+</Project>

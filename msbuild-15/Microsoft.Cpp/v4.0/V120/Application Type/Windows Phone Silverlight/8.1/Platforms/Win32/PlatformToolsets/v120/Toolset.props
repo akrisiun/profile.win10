@@ -1,0 +1,62 @@
+﻿<!--
+***********************************************************************************************
+Toolset.props for Microsoft.Cpp\Win32\v120_wpsl81
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)ImportBefore\*.props" Condition="Exists('$(MSBuildThisFileDirectory)ImportBefore')" />
+
+  <PropertyGroup>
+    <!-- Required for enabling Team Build for packaging Windows Store app projects -->
+    <OutDirWasSpecified Condition=" '$(OutDir)'!='' AND '$(OutDirWasSpecified)'=='' ">true</OutDirWasSpecified>
+    <OutDirWasSpecified Condition=" '$(OutDir)'=='' AND '$(OutDirWasSpecified)'=='' ">false</OutDirWasSpecified>
+
+    <IntDir Condition="'$(IntDir)'=='' AND '$(IntermediateOutputPath)'!=''">$(IntermediateOutputPath)</IntDir>
+    <IntDir Condition="'$(IntDir)'=='' AND '$(IntermediateOutputPath)'==''">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(OutDir)'=='' AND '$(SolutionDir)' != ''">$(SolutionDir)$(Configuration)\</OutDir>
+    <OutDir Condition="'$(OutDir)'=='' AND '$(SolutionDir)' == ''">$(IntDir)</OutDir>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\Microsoft.WindowsPhone.Silverlight81.Common.props" />
+
+  <PropertyGroup>
+    <ExecutablePath Condition="'$(ExecutablePath)' == ''">$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH)</ExecutablePath>
+    <IncludePath Condition="'$(IncludePath)' == ''">$(VC_IncludePath);$(WindowsPhoneSilverlightSDK_IncludePath)</IncludePath>
+    <ReferencePath Condition="'$(ReferencePath)' == ''">$(VC_ReferencesPath_x86)</ReferencePath>
+    <LibraryPath Condition="'$(LibraryPath)' == ''">$(VC_LibraryPath_x86);$(WindowsPhoneSilverlightSDK_LibraryPath_x86);</LibraryPath>
+    <LibraryWPath Condition="'$(LibraryWPath)' == ''">$(WindowsPhoneSilverlightSDK_MetadataPath)</LibraryWPath>
+    <SourcePath Condition="'$(SourcePath)' == ''">$(VC_SourcePath);</SourcePath>
+    <ExcludePath Condition="'$(ExcludePath)' == ''">$(VC_IncludePath);$(WindowsPhoneSilverlightSDK_IncludePath);$(MSBuildToolsPath);$(MSBuildFrameworkToolsPath);$(MSBuild_ExecutablePath);$(VC_LibraryPath_ARM);</ExcludePath>
+
+    <!-- Using Emulator WVGA 512MB -->
+    <DebuggerFlavor>5E7661DF-D928-40ff-B747-A4B1957194F9</DebuggerFlavor>
+  </PropertyGroup>
+
+  <!-- Platform specific -->
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <EnablePREfast Condition="'%(ClCompile.EnablePREfast)' == ''">false</EnablePREfast>
+      <OmitFramePointers Condition="'%(ClCompile.OmitFramePointers)' == ''">false</OmitFramePointers>
+      <DebugInformationFormat  Condition="'$(UseDebugLibraries)' == 'true' and ('$(CLRSupport)' == '' or '$(CLRSupport)' == 'false')">EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <TargetMachine Condition="'%(Link.TargetMachine)' == ''">MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers  Condition="'%(Link.ImageHasSafeExceptionHandlers)'  == '' and '$(UseDebugLibraries)' != 'true'">true</ImageHasSafeExceptionHandlers>
+    </Link>
+    <ImpLib>
+      <TargetMachine Condition="'%(ImpLib.TargetMachine)' == ''">MachineX86</TargetMachine>
+    </ImpLib>
+    <Midl>
+      <TargetEnvironment Condition="'%(Midl.TargetEnvironment)' == ''">Win32</TargetEnvironment>
+    </Midl>
+  </ItemDefinitionGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)ImportAfter\*.props" Condition="Exists('$(MSBuildThisFileDirectory)ImportAfter')" />
+</Project>

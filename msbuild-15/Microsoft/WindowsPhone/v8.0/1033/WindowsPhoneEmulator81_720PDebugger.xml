@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule 
+  Name="D363CCA4-0764-4F2C-9EE1-12E55E13C0FC"
+  DisplayName="Emulator 8.1 720P 4.7 inch"
+  PageTemplate="debugger"
+  Order="100"
+  Description="Windows Phone Emulator Debugger options"
+  xmlns:sys="clr-namespace:System;assembly=mscorlib"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <Rule.Metadata>
+    <sys:Guid x:Key="DebugTargetTypeCommandGuid">307FEFD7-A176-478B-B7F8-7B25E8797CFA</sys:Guid>
+    <sys:UInt32 x:Key="DebugTargetTypeCommandId">0x100</sys:UInt32>
+  </Rule.Metadata>
+  <Rule.DataSource>
+    <DataSource Persistence="UserFile" />
+  </Rule.DataSource>
+  <Rule.Categories>
+    <Category Name="StartOptions" DisplayName="Start Options" Description="Start Options"/>
+    <Category Name="RemoteOptions" DisplayName="Remote Options" Description="Remote Options"/>
+  </Rule.Categories>
+  <EnumProperty 
+    Name="DebuggerType" 
+    DisplayName="Debugger Type" 
+    Category="StartOptions"
+    F1Keyword="VC.Project.IVCAppHostRemoteDebugPageObject.DebuggerType"
+    Description="Specifies the debugger to enable. The native debugger is the only available option.">
+    <EnumProperty.Metadata>
+      <NameValuePair Name="IsDebugType" Value="true"/>
+    </EnumProperty.Metadata>
+    <EnumValue Name="NativeOnly" DisplayName="Native Only" Description="Native Only" />
+  </EnumProperty>
+  <BoolProperty Name="Tombstone" DisplayName="Tombstone upon deactivation" 
+                Description="Specifies whether to tombstone upon deactivation" />
+</Rule>
+

@@ -1,0 +1,93 @@
+﻿<!--
+***********************************************************************************************
+Microsoft.WindowsPhone.Silverlight81.Common.props
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)ImportBefore\*.props" Condition="Exists('$(MSBuildThisFileDirectory)ImportBefore')" />
+
+  <!-- Settings shared with Windows apps -->
+  <PropertyGroup>
+    <!-- Don't use the shared WINAPI_FAMILY_APP setting -->
+    <_NoWinAPIFamilyApp Condition="'$(_NoWinAPIFamilyApp)' == ''">true</_NoWinAPIFamilyApp>
+    <AppContainerApplication>true</AppContainerApplication>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AddItemTemplateGuid>{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC943}</AddItemTemplateGuid>
+    <_DefaultCppCommonExtensionTargets>false</_DefaultCppCommonExtensionTargets>
+    <TargetFrameworkIdentifier>Windows Phone</TargetFrameworkIdentifier>
+
+    <!-- Use windows.winmd -->
+    <WinMDAssembly>true</WinMDAssembly>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- OutDir defined in Microsoft.AppContainerApplication.props -->
+    <IntDir Condition="'$(IntDir)'=='' AND '$(IntermediateOutputPath)'!=''">$(IntermediateOutputPath)</IntDir>
+    <IntDir Condition="'$(IntDir)'=='' AND '$(IntermediateOutputPath)'==''">$(Configuration)\</IntDir>
+
+    <!-- No kernal32.lib or user32.lib -->
+    <NonCoreWin>true</NonCoreWin>
+
+    <!-- No support for native resources: causes "Add Resource" command to be made invisible -->
+    <SupportsNativeResources>false</SupportsNativeResources>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <WindowsPhoneSlSdkDir_81 Condition="'$(WindowsPhoneSlSdkDir_81)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\WindowsPhone\v8.1@InstallationFolder)</WindowsPhoneSlSdkDir_81>
+    <WindowsPhoneSlSdkDir_81 Condition="'$(WindowsPhoneSlSdkDir_81)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\WindowsPhone\v8.1@InstallationFolder)</WindowsPhoneSlSdkDir_81>
+
+    <WindowsPhoneSlSdkDir>$(WindowsPhoneSlSdkDir_81)</WindowsPhoneSlSdkDir>
+  </PropertyGroup>
+
+  <Import Condition="Exists('$(WindowsPhoneSlSdkDir)\DesignTime\CommonConfiguration\Neutral\WindowsPhoneSilverlight.props')" Project="$(WindowsPhoneSlSdkDir)\DesignTime\CommonConfiguration\Neutral\WindowsPhoneSilverlight.props"/>
+
+  <PropertyGroup>
+    <!-- this should be defined before importing Microsoft.Cpp.Common.props-->
+    <TargetPlatformWinMDLocation Condition="'$(TargetPlatformWinMDLocation)' == ''">$(WindowsPhoneSilverLightSDK_MetadataPath)</TargetPlatformWinMDLocation>
+    <!-- make sure Microsoft.Common.targets are using the same sdk locations as we are -->
+    <TargetPlatformSdkPath Condition="'$(TargetPlatformSdkPath)' == ''">$(WindowsPhoneSlSdkDir)</TargetPlatformSdkPath>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Common.props" />
+  
+  <PropertyGroup>
+    <UseDefaultDebuggersPropertyPageSchemas>false</UseDefaultDebuggersPropertyPageSchemas>
+    <_ApplicableDebuggers>AppHost</_ApplicableDebuggers>
+    <CanReferenceWinRT Condition="'$(CanReferenceWinRT)' == ''">true</CanReferenceWinRT>
+    <IgnoreImportLibrary Condition="'$(WinMDAssembly)' == 'true' Or '$(ConfigurationType)' != 'DynamicLibrary'">true</IgnoreImportLibrary>
+    <FullDeploy>true</FullDeploy>
+    <UseDefaultProjectTools>false</UseDefaultProjectTools>
+
+    <DebuggerFlavor Condition="'$(DebuggerFlavor)' == ''">WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectCapability Include="WindowsPhoneNativeProjectAppx"/>
+  </ItemGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <!-- _PPLTASK_ASYNC_LOGGING=0 is used to disable incompatible features used by ppltask -->
+      <PreprocessorDefinitions>_PPLTASK_ASYNC_LOGGING=0;PSAPI_VERSION=2;WINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP;_COLLECTION_WUXI=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AppContainer>false</AppContainer>
+      <AdditionalDependencies>WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>kernel32.lib;ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <FxCompile>
+      <ShaderModel>4.0_level_9_3</ShaderModel>
+      <DisableOptimizations>false</DisableOptimizations>
+    </FxCompile>
+  </ItemDefinitionGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)ImportAfter\*.props" Condition="Exists('$(MSBuildThisFileDirectory)ImportAfter')" />
+</Project>

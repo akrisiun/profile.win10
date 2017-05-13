@@ -1,0 +1,641 @@
+<!--
+***********************************************************************************************
+Microsoft.Phone.Packaging.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <UsingTask TaskName="Microsoft.Silverlight.Build.Tasks.ExpandPayloadDirectories" AssemblyFile="Microsoft.Silverlight.WindowsPhone.Build.Tasks.dll" />
+    <UsingTask TaskName="Microsoft.Silverlight.Build.Tasks.GetPackageArchitecture" AssemblyFile="Microsoft.Silverlight.WindowsPhone.Build.Tasks.dll" />
+    <UsingTask TaskName="Microsoft.Silverlight.Build.Tasks.XapPackager"  AssemblyFile="Microsoft.Silverlight.WindowsPhone.Build.Tasks.dll" />
+    <UsingTask TaskName="Microsoft.Silverlight.Build.Tasks.ValidateXapFilenames" AssemblyFile="Microsoft.Silverlight.WindowsPhone.Build.Tasks.dll" />
+    <UsingTask TaskName="Microsoft.Silverlight.Build.Tasks.RemoveDuplicatePayload" AssemblyFile="Microsoft.Silverlight.WindowsPhone.Build.Tasks.dll" />
+    <UsingTask TaskName="Microsoft.Silverlight.Build.Tasks.RemoveDuplicateSDKReferences" AssemblyFile="Microsoft.Silverlight.WindowsPhone.Build.Tasks.dll" />
+    <UsingTask TaskName="Microsoft.Silverlight.Build.Tasks.GenerateWinPRTManifest" AssemblyFile="Microsoft.Silverlight.WindowsPhone.Build.Tasks.dll" />
+    <UsingTask TaskName="Microsoft.WindowsPhone.Build.Tasks.GenerateBGAgentManifest" AssemblyFile="Microsoft.Silverlight.WindowsPhone.Build.Tasks.dll" />
+    <UsingTask TaskName="Microsoft.Phone.Build.Tasks.ValidateWMAppManifest" AssemblyFile="Microsoft.Phone.Build.Tasks.dll" />
+
+    <!-- Packaging output group default values -->
+    <PropertyGroup>
+        <IncludeBuiltProjectOutputGroup Condition="'$(IncludeBuiltProjectOutputGroup)' == ''">true</IncludeBuiltProjectOutputGroup>
+        <IncludeDebugSymbolsProjectOutputGroup Condition="'$(IncludeDebugSymbolsProjectOutputGroup)' == ''">false</IncludeDebugSymbolsProjectOutputGroup>
+        <IncludeDocumentationProjectOutputGroup Condition="'$(IncludeDocumentationProjectOutputGroup)' == ''">false</IncludeDocumentationProjectOutputGroup>
+        <IncludeSatelliteDllsProjectOutputGroup Condition="'$(IncludeSatelliteDllsProjectOutputGroup)' == ''">false</IncludeSatelliteDllsProjectOutputGroup>
+        <IncludeSourceFilesProjectOutputGroup Condition="'$(IncludeSourceFilesProjectOutputGroup)' == ''">false</IncludeSourceFilesProjectOutputGroup>
+        <IncludeContentFilesProjectOutputGroup Condition="'$(IncludeContentFilesProjectOutputGroup)' == ''">true</IncludeContentFilesProjectOutputGroup>
+        <IncludeSGenFilesOutputGroup Condition="'$(IncludeSGenFilesOutputGroup)' == ''">false</IncludeSGenFilesOutputGroup>
+        <IncludeCopyLocalFilesOutputGroup Condition="'$(IncludeCopyLocalFilesOutputGroup)' == ''">true</IncludeCopyLocalFilesOutputGroup>
+        <IncludeComFilesOutputGroup Condition="'$(IncludeComFilesOutputGroup)' == ''">false</IncludeComFilesOutputGroup>
+        <IncludeCustomOutputGroupForPackaging Condition="'$(IncludeCustomOutputGroupForPackaging)' == ''">false</IncludeCustomOutputGroupForPackaging>
+        <IncludeCopyWinmdArtifactsOutputGroup Condition="'$(IncludeCopyWinmdArtifactsOutputGroup)' == ''">true</IncludeCopyWinmdArtifactsOutputGroup>
+        <IncludeSDKRedistOutputGroup Condition="'$(IncludeSDKRedistOutputGroup)' == ''">true</IncludeSDKRedistOutputGroup>
+        <IncludeGetResolvedSDKReferences Condition="'$(IncludeGetResolvedSDKReferences)' == ''">true</IncludeGetResolvedSDKReferences>
+        <ValidateXapFilenames Condition="'$(ValidateXapFilenames)' == ''">false</ValidateXapFilenames>
+    </PropertyGroup>
+
+
+  <!-- ================================================= -->
+  <!-- Including Background and Application image files   -->
+  <!-- ================================================= -->
+
+  <Target Name="XapImageFiles">
+  
+      <PropertyGroup>
+        <!-- Extract out the Background Image for Tile Background and IconPath for ApplicationIcon by reading the WMAppManifest.xml -->
+        <TokenBackgroundImage Condition="Exists('$([System.IO.Path]::Combine($(MSBuildProjectDirectory),$(PathOfWMAppManifestRelativeToProject)))')">
+          $([System.Text.RegularExpressions.Regex]::Match(
+          $([System.Text.RegularExpressions.Regex]::Match(
+          $([System.IO.File]::ReadAllText('$([System.IO.Path]::Combine($(MSBuildProjectDirectory),$(PathOfWMAppManifestRelativeToProject)))')),
+          "(BackgroundImageURI)\b[^&gt;]*&gt;.*?&lt;/\1&gt;").Value), "&gt;[^&lt;]*?&lt;").Value.Replace('&lt;','').Replace('&gt;',''))
+        </TokenBackgroundImage>
+        <TokenBackgroundImage>$([System.Text.RegularExpressions.Regex]::Replace($(TokenBackgroundImage),@"\t|\n|\r| | ", ""))</TokenBackgroundImage>
+
+        <ApplicationIconImage Condition="Exists('$([System.IO.Path]::Combine($(MSBuildProjectDirectory),$(PathOfWMAppManifestRelativeToProject)))')">
+          $([System.Text.RegularExpressions.Regex]::Match(
+          $([System.Text.RegularExpressions.Regex]::Match(
+          $([System.IO.File]::ReadAllText('$([System.IO.Path]::Combine($(MSBuildProjectDirectory),$(PathOfWMAppManifestRelativeToProject)))')),
+          "(IconPath)\b[^&gt;]*&gt;.*?&lt;/\1&gt;").Value), "&gt;[^&lt;]*?&lt;").Value.Replace('&lt;','').Replace('&gt;',''))
+        </ApplicationIconImage>
+        <ApplicationIconImage>$([System.Text.RegularExpressions.Regex]::Replace($(ApplicationIconImage),@"\t|\n|\r| | ", ""))</ApplicationIconImage>
+
+      </PropertyGroup>
+
+      <ItemGroup>
+        <!-- Include the background and application image file path for copying to Xap explicitly -->
+        <XapFilesInputImageCollection Include="$(TokenBackgroundImage)" Condition = "'$(TokenBackgroundImage)'!=''">
+          <TargetPath>$(TokenBackgroundImage)</TargetPath>
+        </XapFilesInputImageCollection>
+        <XapFilesInputImageCollection Include="$(ApplicationIconImage)" Condition = "'$(ApplicationIconImage)'!=''">
+          <TargetPath>$(ApplicationIconImage)</TargetPath>
+        </XapFilesInputImageCollection>
+      </ItemGroup>
+
+    </Target>
+  
+    <!-- ========================================== -->
+    <!-- Returns Architecture for given Platform.   -->
+    <!-- ========================================== -->
+
+    <Target Name="_GetProjectArchitecture"
+            Returns="@(ProjectArchitecture)">
+
+        <PropertyGroup>
+            <_ProjectArchitectureOutput>Invalid</_ProjectArchitectureOutput>
+            <_ProjectArchitectureOutput Condition="'$(Platform)' == 'AnyCPU'">neutral</_ProjectArchitectureOutput>
+            <_ProjectArchitectureOutput Condition="'$(Platform)' == 'x86'">x86</_ProjectArchitectureOutput>
+            <_ProjectArchitectureOutput Condition="'$(Platform)' == 'Win32'">x86</_ProjectArchitectureOutput>
+            <_ProjectArchitectureOutput Condition="'$(Platform)' == 'x64'">x64</_ProjectArchitectureOutput>
+            <_ProjectArchitectureOutput Condition="'$(Platform)' == 'arm'">arm</_ProjectArchitectureOutput>
+        </PropertyGroup>
+
+        <ItemGroup>
+            <ProjectArchitecture Include="$(_ProjectArchitectureOutput)" />
+        </ItemGroup>
+
+    </Target>
+    
+    
+    <!-- ====================== -->
+    <!-- Project output groups. -->
+    <!-- ====================== -->
+
+    <!-- Targets that all output groups defined in this targets depends on. -->
+    <PropertyGroup>
+        <AllOutputGroupsDependsOn>
+            $(AllOutputGroupsDependsOn);
+            BuildOnlySettings;
+            PrepareForBuild;
+            AssignTargetPaths;
+            ResolveReferences
+        </AllOutputGroupsDependsOn>
+    </PropertyGroup>
+    
+    <!-- ======================================= -->
+    <!-- Output group including CopyLocal files. -->
+    <!-- ======================================= -->
+
+    <PropertyGroup>
+        <CopyLocalFilesOutputGroupDependsOn>
+            $(CopyLocalFilesOutputGroupDependsOn);
+            $(AllOutputGroupsDependsOn)
+        </CopyLocalFilesOutputGroupDependsOn>
+    </PropertyGroup>
+
+    <Target Name="CopyLocalFilesOutputGroup"
+            DependsOnTargets="$(CopyLocalFilesOutputGroupDependsOn)"
+            Returns="@(CopyLocalFilesOutputGroupOutput)">
+
+        <ItemGroup>
+            <CopyLocalFilesOutputGroupOutput Include="@(ReferenceCopyLocalPaths)">
+                <TargetPath>%(ReferenceCopyLocalPaths.DestinationSubDirectory)%(ReferenceCopyLocalPaths.Filename)%(ReferenceCopyLocalPaths.Extension)</TargetPath>
+            </CopyLocalFilesOutputGroupOutput>
+        </ItemGroup>
+
+        <!-- In case of Winmd files, we do not get implementation  -->
+        <!-- file as separate CopyLocal file (if exist), so we are -->
+        <!-- extracting it here.                                   -->
+        <ItemGroup>
+            <_WinmdWithImplementation
+                Include="@(CopyLocalFilesOutputGroupOutput)"
+                Condition="'%(CopyLocalFilesOutputGroupOutput.Extension)' == '.winmd' 
+                       AND '%(CopyLocalFilesOutputGroupOutput.Filename)' != 'platform'
+                       AND '%(CopyLocalFilesOutputGroupOutput.Implementation)' != ''"
+                />
+        </ItemGroup>
+
+        <ItemGroup>
+            <CopyLocalFilesOutputGroupOutput Include="%(_WinmdWithImplementation.RootDir)%(_WinmdWithImplementation.Directory)%(_WinmdWithImplementation.Implementation)">
+                <TargetPath>%(_WinmdWithImplementation.DestinationSubDirectory)%(_WinmdWithImplementation.Implementation)</TargetPath>
+            </CopyLocalFilesOutputGroupOutput>
+        </ItemGroup>
+
+    </Target>
+
+    <PropertyGroup>
+        <GetPackagingOutputsDependsOn>
+            $(GetPackagingOutputsDependsOn);
+            AssignProjectConfiguration;
+            _SplitProjectReferencesByFileExistence
+        </GetPackagingOutputsDependsOn>
+    </PropertyGroup>
+
+    <Target Name="GetPackagingOutputs"
+            Returns="@(PackagingOutputs)"
+            DependsOnTargets="$(GetPackagingOutputsDependsOn)">
+
+        <CallTarget Targets="BuiltProjectOutputGroup" Condition="'$(IncludeBuiltProjectOutputGroup)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_BuiltProjectOutputGroupOutput"/>
+        </CallTarget>
+        
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="%(_BuiltProjectOutputGroupOutput.FinalOutputPath)">
+                <TargetPath>%(_BuiltProjectOutputGroupOutput.TargetPath)</TargetPath>
+                <OutputGroup>BuiltProjectOutputGroup</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+            </_PackagingOutputsUnexpanded>
+        </ItemGroup>
+
+        <CallTarget Targets="DebugSymbolsProjectOutputGroup" Condition="'$(IncludeDebugSymbolsProjectOutputGroup)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_DebugSymbolsProjectOutputGroupOutput"/>
+        </CallTarget>
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="%(_DebugSymbolsProjectOutputGroupOutput.FinalOutputPath)">
+                <OutputGroup>DebugSymbolsProjectOutputGroup</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+            </_PackagingOutputsUnexpanded>
+        </ItemGroup>
+
+        <CallTarget Targets="DocumentationProjectOutputGroup" Condition="'$(IncludeDocumentationProjectOutputGroup)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_DocumentationProjectOutputGroupOutput"/>
+        </CallTarget>
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="@(_DocumentationProjectOutputGroupOutput)">
+                <OutputGroup>DocumentationProjectOutputGroup</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+            </_PackagingOutputsUnexpanded>
+        </ItemGroup>
+
+        <CallTarget Targets="SatelliteDllsProjectOutputGroup" Condition="'$(IncludeSatelliteDllsProjectOutputGroup)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_SatelliteDllsProjectOutputGroupOutput"/>
+        </CallTarget>
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="@(_SatelliteDllsProjectOutputGroupOutput)">
+                <OutputGroup>SatelliteDllsProjectOutputGroup</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+            </_PackagingOutputsUnexpanded>
+        </ItemGroup>
+
+        <CallTarget Targets="SourceFilesProjectOutputGroup" Condition="'$(IncludeSourceFilesProjectOutputGroup)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_SourceFilesProjectOutputGroupOutput"/>
+        </CallTarget>
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="@(_SourceFilesProjectOutputGroupOutput)">
+                <OutputGroup>SourceFilesProjectOutputGroup</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+            </_PackagingOutputsUnexpanded>
+        </ItemGroup>
+
+        <CallTarget Targets="SGenFilesOutputGroup"  Condition="'$(IncludeSGenFilesOutputGroup)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_SGenFilesOutputGroupOutput"/>
+        </CallTarget>
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="@(_SGenFilesOutputGroupOutput)">
+                <OutputGroup>SGenFilesOutputGroup</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+            </_PackagingOutputsUnexpanded>
+        </ItemGroup>
+
+        <CallTarget Targets="CopyLocalFilesOutputGroup"  Condition="'$(IncludeCopyLocalFilesOutputGroup)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_CopyLocalFilesOutputGroupOutput"/>
+        </CallTarget>
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="@(_CopyLocalFilesOutputGroupOutput)">
+                <OutputGroup>CopyLocalFilesOutputGroup</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+            </_PackagingOutputsUnexpanded>
+        </ItemGroup>
+
+        <CallTarget Targets="ComFilesOutputGroup"  Condition="'$(IncludeComFilesOutputGroup)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_ComFilesOutputGroupOutput"/>
+        </CallTarget>
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="@(_ComFilesOutputGroupOutput)">
+                <OutputGroup>ComFilesOutputGroup</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+            </_PackagingOutputsUnexpanded>
+        </ItemGroup>
+
+        <CallTarget Targets="CopyWinmdArtifactsOutputGroup"  Condition="'$(IncludeCopyWinmdArtifactsOutputGroup)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_CopyWinmdArtifactsOutputGroupOutput"/>
+        </CallTarget>
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="@(_CopyWinmdArtifactsOutputGroupOutput)">
+                <OutputGroup>CopyWinmdArtifactsOutputGroup</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+            </_PackagingOutputsUnexpanded>
+        </ItemGroup>
+
+        <CallTarget Targets="SDKRedistOutputGroup"  Condition="'$(IncludeSDKRedistOutputGroup)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_SDKRedistOutputGroupOutput"/>
+        </CallTarget>
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="@(_SDKRedistOutputGroupOutput)">
+                <OutputGroup>SDKRedistOutputGroup</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+            </_PackagingOutputsUnexpanded>
+        </ItemGroup>
+
+        <CallTarget Targets="ContentFilesProjectOutputGroup" Condition="'$(IncludeContentFilesProjectOutputGroup)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_ContentFilesProjectOutputGroupOutput"/>
+        </CallTarget>
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="@(_ContentFilesProjectOutputGroupOutput)">
+                <OutputGroup>ContentFilesProjectOutputGroup</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+                <!--<TargetPath>$(TargetName)\%(_ContentFilesProjectOutputGroupOutput.TargetPath)</TargetPath>-->
+            </_PackagingOutputsUnexpanded>
+        </ItemGroup>
+
+        <CallTarget Targets="CustomOutputGroupForPackaging" Condition="'$(IncludeCustomOutputGroupForPackaging)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_CustomOutputGroupForPackagingOutput"/>
+        </CallTarget>
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="@(_CustomOutputGroupForPackagingOutput)">
+                <OutputGroup>CustomOutputGroupForPackaging</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+                <TargetPath>$(TargetName)\%(_CustomOutputGroupForPackagingOutput.TargetPath)</TargetPath>
+            </_PackagingOutputsUnexpanded>
+        </ItemGroup>
+
+        <ExpandPayloadDirectories Inputs="@(_PackagingOutputsUnexpanded)">
+            <Output TaskParameter="Expanded" ItemName="_PackagingOutputsExpanded" />
+        </ExpandPayloadDirectories>
+
+        <CallTarget Targets="GetResolvedSDKReferences"  Condition="'$(IncludeGetResolvedSDKReferences)' == 'true'">
+            <Output TaskParameter="TargetOutputs" ItemName="_GetResolvedSDKReferencesOutputWithoutMetadata"/>
+        </CallTarget>
+        <ItemGroup>
+            <_GetResolvedSDKReferencesOutput Include="@(_GetResolvedSDKReferencesOutputWithoutMetadata)">
+                <OutputGroup>GetResolvedSDKReferences</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+            </_GetResolvedSDKReferencesOutput>
+        </ItemGroup>
+
+        <CallTarget Targets="_GetProjectArchitecture">
+            <Output TaskParameter="TargetOutputs" ItemName="_ProjectArchitecture" />
+        </CallTarget>
+
+        <ItemGroup>
+            <_ProjectArchitectureItem Include="@(_ProjectArchitecture)">
+                <OutputGroup>_GetProjectArchitecture</OutputGroup>
+                <ProjectName>$(ProjectName)</ProjectName>
+            </_ProjectArchitectureItem>
+        </ItemGroup>
+
+        <MSBuild
+          Projects="@(ProjectReferenceWithConfiguration)"
+          Targets="GetPackagingOutputs"
+          BuildInParallel="$(BuildInParallel)"
+          Properties="%(ProjectReferenceWithConfiguration.SetConfiguration); %(ProjectReferenceWithConfiguration.SetPlatform)"
+          Condition="'@(ProjectReferenceWithConfiguration)' != ''
+                 and '%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' 
+                 and '%(ProjectReferenceWithConfiguration.ReferenceOutputAssembly)' == 'true'"          
+          ContinueOnError="!$(BuildingProject)">
+            <Output TaskParameter="TargetOutputs" ItemName="_PackagingOutputsFromOtherProjectsAll"/>
+        </MSBuild>
+
+        <!-- Remove all PDBs coming from referenced projects's DebugSymbolsProjectOutputGroup.             -->
+        <!-- Needed because PDBs from said OG are coming with intermediate path (obj\Debug)                -->
+        <!-- and carry no FinalOutputPath metadata as binaries to allow adjustment.                        -->
+        <!-- This causes clash with same PDBs coming from CopyLocal OG which carry final path (bin\Debug). -->
+        <ItemGroup>
+            <_PackagingOutputsFromOtherProjects Include="@(_PackagingOutputsFromOtherProjectsAll)" />
+            <_PackagingOutputsFromOtherProjects Remove="@(_PackagingOutputsFromOtherProjectsAll)" Condition="'%(_PackagingOutputsFromOtherProjectsAll.OutputGroup)' == 'DebugSymbolsProjectOutputGroup'" />
+        </ItemGroup>
+        <ItemGroup>
+            <PackagingOutputs Include="@(_PackagingOutputsExpanded)" />
+            <PackagingOutputs Include="@(_GetResolvedSDKReferencesOutput)" />
+            <PackagingOutputs Include="@(_PackagingOutputsFromOtherProjects)" />
+            <PackagingOutputs Include="@(_ProjectArchitectureItem)" />
+        </ItemGroup>
+    </Target>
+
+    <!-- Filter out the Project Architechture from GetPackagingOutputs -->
+    <PropertyGroup>
+        <FilterPackagingOutPutsDependsOn>
+            $(FilterPackagingOutPutsDependsOn);
+            GetPackagingOutputs;
+        </FilterPackagingOutPutsDependsOn>
+    </PropertyGroup>
+
+    <Target Name="FilterPackagingOutPuts" 
+            Returns="@(FilteredPackagingOutputs)"
+            DependsOnTargets="$(FilterPackagingOutPutsDependsOn)">
+
+        <ItemGroup>
+            <FilteredPackagingOutputs Include="@(PackagingOutputs)" Condition="'%(OutputGroup)' != 'GetResolvedSDKReferences' AND '%(OutputGroup)' != '_GetProjectArchitecture' AND '%(OutputGroup)' != 'GetProjectArchitecture' AND '%(PackagingOutputs.Extension)' != '.pdb' AND '%(PackagingOutputs.Extension)' != '.pri' AND Exists ('%(PackagingOutputs.FullPath)') AND '%(PackagingOutputs.FullPath)' != '$(MSBuildProjectDirectory)\WMAppManifest.xml'"/>
+        </ItemGroup>
+    </Target>
+
+    <!-- ============================== -->
+    <!-- Getting package architecture.  -->
+    <!-- ============================== -->
+
+    <PropertyGroup>
+        <_GetPackagePropertiesDependsOn>
+            $(_GetPackagePropertiesDependsOn);
+            _GetProjectArchitecture;
+            _GetRecursiveProjectArchitecture;
+            _GetPackageArchitecture;
+        </_GetPackagePropertiesDependsOn>
+    </PropertyGroup>
+
+    <!-- Gets some package properties. -->
+    <Target Name="_GetPackageProperties"
+            DependsOnTargets="$(_GetPackagePropertiesDependsOn)"
+            />
+
+    <!-- Extract Project Architecture from the payload -->
+    <Target Name="_GetRecursiveProjectArchitecture">
+
+        <ItemGroup>
+            <_RecursiveProjectArchitecture Include="@(PackagingOutputs)" Condition="'%(OutputGroup)' == '_GetProjectArchitecture'" />
+            <_RecursiveProjectArchitecture Remove="@(_RecursiveProjectArchitecture)" Condition="'%(ProjectName)' == '$(ProjectName)'" />
+        </ItemGroup>
+
+    </Target>
+
+    <!-- Gets package architecture. -->
+    <Target Name="_GetPackageArchitecture">
+
+        <GetPackageArchitecture
+            Platform="$(Platform)"
+            ProjectArchitecture="@(ProjectArchitecture)"
+            RecursiveProjectArchitecture="@(_RecursiveProjectArchitecture)"
+            >
+            <Output TaskParameter="PackageArchitecture" PropertyName="PackageArchitecture" />
+        </GetPackageArchitecture>
+
+    </Target>
+
+    <PropertyGroup>
+        <ValidateXapFilenames Condition="'$(ValidateXapFilenames)' == ''">false</ValidateXapFilenames>
+        <!--If the path to the sign tool is not set, assume the SDK path -->
+        <SignToolPath Condition="'$(SignToolPath)' == ''">$(MSBuildProgramFiles32)\Windows Kits\8.0\bin\x86</SignToolPath>
+        <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v8.0</TargetFrameworkVersion>	
+    </PropertyGroup>
+
+    <!-- 
+    ================================================================
+                        _CreateSLProperties
+                        
+    Creates some silverlight dependent properties
+    ================================================================
+     -->
+    <Target
+        Name="_CreateSLProperties"
+     >
+        <CreateProperty Value="@(_OutputPathItem->'%(FullPath)$(XapFilename)')" Condition="'$(XapOutputs)'=='true'">
+            <Output TaskParameter="Value" PropertyName="XapOutputFile"/>
+        </CreateProperty>
+    </Target>
+
+    <!--   
+    ================================================================
+                           XapPackager
+    This task packages the outputs of the project into a single xap
+    file. It relies on the fact that the InputFiles item collection has
+    the FullPath and TargetPath metadata associated with them.
+    ================================================================
+    -->
+    <Target Name="XapPackager"
+          DependsOnTargets="$(XapPackagerDependsOn)" 
+          Condition="'$(XapOutputs)'=='true'"
+          Outputs="$(XapOutputFile)">
+
+        <PropertyGroup>
+            <MDILGeneration Condition="'$(ProjectTypeGuids)'=='{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}' 
+            Or '$(ProjectTypeGuids)'=='{DB03555F-0C8B-43BE-9FF9-57896B3C5E56};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}'" >$(MDILCompile)</MDILGeneration>
+        </PropertyGroup>
+        <XapPackager 
+            InputFiles="@(XapFilesInputCollection)" 
+            ProjectPath="$(MSBuildProjectFullPath)"
+            XapFileName="$(XapFilename)"
+            OutputPath="$(OutDir)" 
+            IntermediateOutputPath="$(IntermediateOutputPath)"
+            SignToolPath="$(SignToolPath)"
+            XapSignToolPath="$(MSBuildProgramFiles32)\Microsoft SDKs\Windows Phone\$(TargetFrameworkVersion)\Tools\XapSignTool"
+            SignXap="$(SignXap)"
+            CertificateThumbprint="$(CertificateThumbprint)"
+            TimestampUrl="$(ManifestTimestampUrl)"
+            SignKeyFile="$(SignKeyFile)"
+            SignKeyPassword="$(SignKeyPassword)"
+            IsRFC3161TimestampUrl="$(IsRFC3161TimestampUrl)"
+            SdkVersion="$(WindowsPhone7SdkVersion)"   
+            MDILCompile="$(MDILGeneration)"
+            >
+            
+            <!--Add to Clean-->
+            <Output ItemName="FileWrites" TaskParameter="XapOutputFile" />
+            <Output ItemName="FileWrites" TaskParameter="XapFileCache" />
+
+        </XapPackager>
+    </Target>
+
+    <!--
+    ============================================================
+                            GetXapOutputFile
+
+    This stand-alone target returns the name of the built xap file.It
+    only makes sense to call this after a build
+    ============================================================
+    -->
+    <Target
+        Name="GetXapOutputFile"
+        DependsOnTargets="BuiltProjectOutputGroup" 
+        Outputs="@(SilverlightDeployableOutputs)"
+    >
+        <ItemGroup>
+            <SilverlightDeployableOutputs Include="@(BuiltProjectOutputGroupOutput)"  Condition="'%(BuiltProjectOutputGroupOutput.DeployableSilverlightFile)' == 'true'">
+                <SilverlightSourceProject>$(MSBuildProjectFullPath)</SilverlightSourceProject>
+            </SilverlightDeployableOutputs>
+        </ItemGroup>
+    </Target>
+
+
+    
+
+    <!--   
+    ================================================================
+                           ValidateXapFilenames
+    This task validates that the files that will be packaged into
+    the XAP are ascii compliant. It can be disabled by setting the
+    ValidateXapFilenames property to false in the project file.
+    ================================================================
+    -->
+    <PropertyGroup>
+        <ValidateXapFilenamesDependsOn>
+            _CreateSLProperties;
+            FilesToXap;
+        </ValidateXapFilenamesDependsOn>
+    </PropertyGroup>
+
+    <Target Name="ValidateXapFilenames"
+          DependsOnTargets="$(ValidateXapFilenamesDependsOn)" 
+          Condition="'$(ValidateXapFilenames)'=='true' and '$(XapOutputs)'=='true'"
+          >
+
+        <ValidateXapFilenames 
+            InputFiles="@(XapFilesInputCollection)" 
+            XapFileName="$(XapFilename)"
+            SupportedCultures="$(SupportedCultures)" 
+        />
+    </Target>
+
+
+    <PropertyGroup>
+        <ComputeWinMDsDependsOn>
+            $(ComputeWinMDsDependsOn);
+            FilterPackagingOutPuts;
+        </ComputeWinMDsDependsOn>
+    </PropertyGroup>
+
+    <Target Name="ComputeWinMDs"
+            DependsOnTargets="$(ComputeWinMDsDependsOn)"
+            >
+        
+        <ItemGroup>
+            <WinMDPayload Include="@(FilteredPackagingOutputs)"
+                                                 Condition="'%(FilteredPackagingOutputs.Extension)' == '.winmd' 
+                                                       and '%(FilteredPackagingOutputs.OutputGroup)' == 'CopyWinmdArtifactsOutputGroup'
+                                                       and '%(FilteredPackagingOutputs.ProjectName)' != '$(ProjectName)'" />
+            <WinMDPayload Include="@(FilteredPackagingOutputs)"
+                                                 Condition="'%(FilteredPackagingOutputs.Extension)' == '.winmd' 
+                                                       and '%(FilteredPackagingOutputs.OutputGroup)' == 'CopyLocalFilesOutputGroup'" />
+            <WinMDPayload Include="@(FilteredPackagingOutputs)"
+                                                   Condition="'%(FilteredPackagingOutputs.Extension)' == '.winmd' 
+                                                       and '%(FilteredPackagingOutputs.OutputGroup)' != 'CopyWinmdArtifactsOutputGroup'
+                                                       and '%(FilteredPackagingOutputs.OutputGroup)' != 'CopyLocalFilesOutputGroup'
+                                                       and '%(FilteredPackagingOutputs.ResolvedFrom)' != 'GetSDKReferenceFiles'" />
+
+        </ItemGroup>
+
+       <RemoveDuplicatePayload Inputs="@(WinMDPayload)">
+           <Output TaskParameter="Filtered" ItemName="_WinmdFilesToHarvest" />
+       </RemoveDuplicatePayload>
+
+    </Target>
+
+    <!-- Extract SDK references from the payload and filters out duplicates. -->
+    <Target Name="_GetRecursiveResolvedSDKReferences">
+
+        <ItemGroup>
+            <_UnfilteredRecursiveResolvedSDKReference Include="@(PackagingOutputs)"
+                                                      Condition="'%(OutputGroup)' == 'GetResolvedSDKReferences'" />
+        </ItemGroup>
+
+        <RemoveDuplicateSDKReferences Inputs="@(_UnfilteredRecursiveResolvedSDKReference)">
+            <Output TaskParameter="Filtered" ItemName="RecursiveResolvedSDKReference" />
+        </RemoveDuplicateSDKReferences>
+
+        <ItemGroup>
+            <FrameworkSdkReference Include="@(RecursiveResolvedSDKReference)"
+                                   Condition="'%(RecursiveResolvedSDKReference.FrameworkIdentity)' != ''"
+                             />
+        </ItemGroup>
+
+        <ItemGroup>
+            <NonFrameworkSdkReference Include="@(RecursiveResolvedSDKReference)"
+                                      Condition="'%(RecursiveResolvedSDKReference.FrameworkIdentity)' == ''"
+                                />
+        </ItemGroup>
+
+    </Target>
+
+	<Target Name="_CalculateSDKWinMDFiles">
+
+	    <ItemGroup>
+             <_WinmdFilesFromSDKs Include="@(PackagingOutputs)"
+                               Condition="'%(PackagingOutputs.Extension)' == '.winmd'
+                               and '%(PackagingOutputs.ResolvedFrom)' == 'GetSDKReferenceFiles'" />		   
+	    </ItemGroup>
+        
+		<RemoveDuplicatePayload Inputs="@(_WinmdFilesFromSDKs)">
+            <Output TaskParameter="Filtered" ItemName="_SDKWinmdFilesForHarvest" />
+        </RemoveDuplicatePayload>
+		
+	</Target>
+
+    <PropertyGroup>
+        <WMAppManifestWinMDRegistrationDependsOn>
+            $(WMAppManifestWinMDRegistrationDependsOn);
+            ComputeWinMDs;
+            _GetRecursiveResolvedSDKReferences;
+            _CalculateSDKWinMDFiles;
+        </WMAppManifestWinMDRegistrationDependsOn>
+    </PropertyGroup>
+
+    <Target Name="WMAppManifestWinMDRegistration"
+            DependsOnTargets="$(WMAppManifestWinMDRegistrationDependsOn)"
+            >
+        <GenerateWinPRTManifest
+            ProjectPath="$(MSBuildProjectDirectory)"
+            OutputPath="$(OutDir)" 
+            WinmdFiles="@(_WinmdFilesToHarvest)"
+            NonFrameworkSdkReferences="@(NonFrameworkSdkReference)"
+            SDKWinmdFiles="@(_SDKWinmdFilesForHarvest)"
+            WMAppManifestRelativePath="$(PathOfWMAppManifestRelativeToProject)">
+            
+            <Output TaskParameter="WMAppManifestOutput" PropertyName="WMAppManifestOutput" />
+
+            <!--Add to Clean-->          
+            <Output ItemName="FileWrites" TaskParameter="WMAppManifestOutput" />
+
+        </GenerateWinPRTManifest>
+    </Target>
+
+    <Target Name="WMAppManifestBGAgentRegistration"
+            DependsOnTargets="$(WMAppManifestBGAgentRegistrationDependsOn)"
+            >
+        <GenerateBGAgentManifest  
+            ProjectReferences="@(ReferencePath);@(InferredReference->'$(TargetFrameworkDirectory)\%(Identity)')"
+            WMAppManifestFullPath="$(WMAppManifestOutput)">                     
+        </GenerateBGAgentManifest>
+    </Target>
+
+
+    <Target
+        Name="ValidateWMAppManifest"
+    >
+        <ValidateWMAppManifest WMAppManifest="$(WMAppManifestOutput)"
+                               AppPlatformVersion="$(TargetPlatformVersion)" />
+    </Target>
+
+</Project>

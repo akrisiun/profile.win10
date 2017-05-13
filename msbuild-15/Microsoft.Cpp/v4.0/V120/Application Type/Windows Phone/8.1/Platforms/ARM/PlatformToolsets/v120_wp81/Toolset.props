@@ -1,0 +1,63 @@
+﻿<!--
+***********************************************************************************************
+Toolset.props for Microsoft.Cpp\ARM\v120_wp81
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)ImportBefore\*.props" Condition="Exists('$(MSBuildThisFileDirectory)ImportBefore')" />
+
+  <PropertyGroup>
+    <!-- Required for enabling Team Build for packaging Windows Store app projects -->
+    <OutDirWasSpecified Condition=" '$(OutDir)'!='' AND '$(OutDirWasSpecified)'=='' ">true</OutDirWasSpecified>
+    <OutDirWasSpecified Condition=" '$(OutDir)'=='' AND '$(OutDirWasSpecified)'=='' ">false</OutDirWasSpecified>
+
+    <IntDir Condition="'$(IntDir)'=='' AND '$(IntermediateOutputPath)'!=''">$(IntermediateOutputPath)</IntDir>
+    <IntDir Condition="'$(IntDir)'=='' AND '$(IntermediateOutputPath)'==''">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(OutDir)'=='' AND '$(SolutionDir)' == ''">$(IntDir)</OutDir>
+    <OutDir Condition="'$(OutDir)'=='' AND '$(SolutionDir)' != ''">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\WindowsPhone.Common.props" />
+
+  <PropertyGroup>
+    <ExecutablePath Condition="'$(ExecutablePath)' == ''">$(VC_ExecutablePath_ARM);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH)</ExecutablePath>
+    <IncludePath Condition="'$(IncludePath)' == ''">$(VC_IncludePath);$(WindowsPhoneSDK_IncludePath)</IncludePath>
+    <ReferencePath Condition="'$(ReferencePath)' == ''">$(VC_ReferencesPath_ARM)</ReferencePath>
+    <LibraryPath Condition="'$(LibraryPath)' == ''">$(VC_LibraryPath_ARM);$(WindowsPhoneSDK_LibraryPath_arm);</LibraryPath>
+    <LibraryWPath Condition="'$(LibraryWPath)' == ''">$(WindowsPhoneSDK_MetadataPath)</LibraryWPath>
+    <SourcePath Condition="'$(SourcePath)' == ''">$(VC_SourcePath);</SourcePath>
+    <ExcludePath Condition="'$(ExcludePath)' == ''">$(VC_IncludePath);$(WindowsPhoneSDK_IncludePath);$(MSBuildToolsPath);$(MSBuildFrameworkToolsPath);$(MSBuild_ExecutablePath);$(VC_LibraryPath_ARM);</ExcludePath>
+
+    <!-- Using Device Debugger -->
+    <DebuggerFlavor>30F105C9-681E-420b-A277-7C086EAD8A4E</DebuggerFlavor>
+  </PropertyGroup>
+
+  <!-- Platform specific -->
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <EnablePREfast Condition="'%(ClCompile.EnablePREfast)' == ''">false</EnablePREfast>
+      <OmitFramePointers Condition="'%(ClCompile.OmitFramePointers)' == ''">false</OmitFramePointers>
+    </ClCompile>
+    <Link>
+      <TargetMachine Condition="'%(Link.TargetMachine)' == ''">MachineARM</TargetMachine>
+    </Link>
+    <Lib>
+      <TargetMachine Condition="'%(Lib.TargetMachine)' == ''">MachineARM</TargetMachine>
+    </Lib>
+    <ImpLib>
+      <TargetMachine Condition="'%(ImpLib.TargetMachine)' == ''">MachineARM</TargetMachine>
+    </ImpLib>
+    <Midl>
+      <TargetEnvironment Condition="'%(Midl.TargetEnvironment)' == ''">ARM32</TargetEnvironment>
+    </Midl>
+  </ItemDefinitionGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)ImportAfter\*.props" Condition="Exists('$(MSBuildThisFileDirectory)ImportAfter')" />
+</Project>

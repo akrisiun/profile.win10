@@ -1,0 +1,51 @@
+﻿<!--
+***********************************************************************************************
+Microsoft.VisualStudio.TeamArchitect.ModelingProject.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+This file defines the steps in the standard Msbuild process specific for dependency validation projects
+(previously referred to as "modeling projects").
+The Msbuild process is defined in Microsoft.Common.targets, which is imported by 
+this file.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- The standard build targets are used to resolve assembly, project and COM references. However, there is nothing to do when
+       the project is actually built so the build-related targets are re-defined here to be no-ops. -->
+  <PropertyGroup>
+    <MSBuildAllProjects>
+      $(MSBuildAllProjects);
+      $(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\ArchitectureTools\Microsoft.VisualStudio.TeamArchitect.ModelingProject.targets
+    </MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Language>UML</Language>
+    <TargetType>Container</TargetType>
+    <ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>true</ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>
+    <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+    <!-- The dependency validation project needs to be able to locate all of the assemblies it references so
+    the $(TargetFrameworkVersion) needs to be set to an appropriate value. -->
+    <TargetFrameworkVersion Condition="$(TargetFrameworkVersion) == ''">v4.5</TargetFrameworkVersion>
+    <ImplicitlyExpandDesignTimeFacades Condition="$(ImplicitlyExpandDesignTimeFacades) == ''">false</ImplicitlyExpandDesignTimeFacades>
+  </PropertyGroup>
+
+  <Import Project="$(MsBuildToolsPath)\Microsoft.Common.targets" />
+  <Target Name="_CheckForInvalidConfigurationAndPlatform" />
+  <Target Name="Build">  
+    <Message Importance="normal" Text="Building a dependency validation project is a no-op" />
+  </Target>
+  <Target Name="Rebuild">  
+    <Message Importance="normal" Text="Rebuilding a dependency validation project is a no-op" />
+  </Target>
+  <Target Name="Clean">  
+    <Message Importance="normal" Text="Cleaning a dependency validation project is a no-op" />
+  </Target>
+
+</Project>

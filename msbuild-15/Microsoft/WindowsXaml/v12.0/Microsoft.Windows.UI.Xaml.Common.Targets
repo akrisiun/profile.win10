@@ -1,0 +1,8 @@
+
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(TargetPlatformVersion)'==''">
+    <TargetPlatformVersion>8.0</TargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(TargetPlatformVersion)\Microsoft.Windows.UI.Xaml.Common.targets" />
+</Project>
