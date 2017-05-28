@@ -30,6 +30,9 @@
     </EnumProperty.Metadata>
   </EnumProperty>
 
+  <StringProperty Name="CommandLineArgs" DisplayName="Argumentos de la línea de comandos" Category="StartOptions" F1Keyword="javascript.project.property.debugging.commandlineargs" Description="Permite especificar argumentos de la línea de comandos que se pasan al inicio de la aplicación para UWP">
+  </StringProperty>
+
   <StringProperty Name="MachineName" DisplayName="Nombre de equipo" Category="RemoteOptions" F1Keyword="javascript.project.property.debugging.machinename" Description="Especifica el nombre del equipo que se va a usar para la depuración remota.  Use la lista desplegable para encontrar los equipos cercanos.">
     <StringProperty.ValueEditors>
       <ValueEditor EditorType="JsRemoteDebuggerOptionsPropertyEditor" DisplayName="&lt;Buscar...&gt;">

@@ -78,8 +78,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   -->
 
   <UsingTask TaskName="CleanWorkspace" AssemblyFile="$(DockerBuildTasksAssembly)" />
-  <UsingTask TaskName="EnsureClrDbgExists" AssemblyFile="$(DockerBuildTasksAssembly)" />
   <UsingTask TaskName="EnsureMsVsMonExists" AssemblyFile="$(DockerBuildTasksAssembly)" />
+  <UsingTask TaskName="EnsureVsDbgExists" AssemblyFile="$(DockerBuildTasksAssembly)" />
   <UsingTask TaskName="GetServiceReferences" AssemblyFile="$(DockerBuildTasksAssembly)" />
   <UsingTask TaskName="PrepareForBuild" AssemblyFile="$(DockerBuildTasksAssembly)" />
   <UsingTask TaskName="PrepareForLaunch" AssemblyFile="$(DockerBuildTasksAssembly)" />
@@ -169,7 +169,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </PropertyGroup>
     <MSBuild Projects="@(DockerServiceReference)"
              Targets="$(DockerServiceReferenceTarget)"
-             Properties="Configuration=$(Configuration);Platform=$(Platform)"
+             Properties="Configuration=$(Configuration);Platform=$(Platform);BuildingInsideVisualStudio=false"
              Condition=" '@(DockerServiceReference)' != '' " />
   </Target>
 
@@ -182,8 +182,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   -->
 
   <Target Name="DockerPrepareForLaunch" Condition=" Exists('$(DockerIntermediateOutputPath)\launch.sem') ">
-    <EnsureClrDbgExists DockerComposeProjectPath="$(DockerComposeProjectPath)"
-                        DockerDevelopmentMode="$(DockerDevelopmentMode)" />
+    <EnsureVsDbgExists DockerComposeProjectPath="$(DockerComposeProjectPath)"
+                       DockerDevelopmentMode="$(DockerDevelopmentMode)" />
 
     <EnsureMsVsMonExists DockerComposeProjectPath="$(DockerComposeProjectPath)"
                          DockerDevelopmentMode="$(DockerDevelopmentMode)"
@@ -220,7 +220,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <Target Name="DockerCleanServiceReferences">
     <MSBuild Projects="@(DockerServiceReference)"
              Targets="Clean"
-             Properties="Configuration=$(Configuration);Platform=$(Platform)"
+             Properties="Configuration=$(Configuration);Platform=$(Platform);BuildingInsideVisualStudio=false"
              Condition=" '@(DockerServiceReference)' != '' " />
   </Target>
 

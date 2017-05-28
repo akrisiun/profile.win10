@@ -30,6 +30,9 @@
     </EnumProperty.Metadata>
   </EnumProperty>
 
+  <StringProperty Name="CommandLineArgs" DisplayName="Argumenty příkazového řádku" Category="StartOptions" F1Keyword="javascript.project.property.debugging.commandlineargs" Description="Umožňuje zadání argumentů příkazového řádku, které se předají při spuštění aplikace pro UPW.">
+  </StringProperty>
+
   <StringProperty Name="MachineName" DisplayName="Název počítače" Category="RemoteOptions" F1Keyword="javascript.project.property.debugging.machinename" Description="Určuje název počítače při použití vzdáleného ladění. Pomocí rozevíracího seznamu vyhledejte blízké počítače.">
     <StringProperty.ValueEditors>
       <ValueEditor EditorType="JsRemoteDebuggerOptionsPropertyEditor" DisplayName="&lt;Umístění...&gt;">

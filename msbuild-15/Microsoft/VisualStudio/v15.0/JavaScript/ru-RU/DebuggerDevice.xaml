@@ -26,4 +26,7 @@
             <NameValuePair Name="IsDebugType" Value="true"/>
         </EnumProperty.Metadata>
     </EnumProperty>
+
+  <StringProperty Name="CommandLineArgs" DisplayName="Аргументы командной строки" Category="StartOptions" F1Keyword="javascript.project.property.debugging.commandlineargs" Description="Разрешает указывать аргументы командной строки, которые передаются в запуск приложения UWP">
+  </StringProperty>
 </Rule>

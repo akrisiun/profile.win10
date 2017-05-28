@@ -28,4 +28,7 @@
       <NameValuePair Name="IsDebugType" Value="true"/>
     </EnumProperty.Metadata>
   </EnumProperty>
+
+  <StringProperty Name="CommandLineArgs" DisplayName="Befehlszeilenargumente" Category="StartOptions" F1Keyword="javascript.project.property.debugging.commandlineargs" Description="Erlaubt das Festlegen von Befehlszeilenargumenten, die an den Start der UWP-App übergeben werden">
+  </StringProperty>
 </Rule>

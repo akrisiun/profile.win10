@@ -19,5 +19,5 @@ Copyright (c) .NET Foundation. All rights reserved.
   <PropertyGroup>
     <NuGetRestoreTargets Condition="'$(NuGetRestoreTargets)'==''">$(MSBuildExtensionsPath)\..\Common7\IDE\CommonExtensions\Microsoft\NuGet\NuGet.targets</NuGetRestoreTargets>
   </PropertyGroup>
-  <!-- <Import Condition="Exists('$(NuGetRestoreTargets)')" Project="$(NuGetRestoreTargets)" /> -->
+  <Import Condition="Exists('$(NuGetRestoreTargets)')" Project="$(NuGetRestoreTargets)" />
 </Project>

@@ -61,6 +61,12 @@
 
     <StringProperty Name="SDKExtensionDirectoryRoot" Visible="false" />
 
+    <StringProperty Name="CommandLineArgs" Visible="false">
+        <StringProperty.DataSource>
+            <DataSource Persistence="ProjectFile" Label="Configuration" HasConfigurationCondition="false" />
+        </StringProperty.DataSource>
+    </StringProperty>
+
     <StringProperty Name="DefaultReferenceGroup" Visible="false">
         <StringProperty.DataSource>
             <DataSource Persistence="ProjectFile" Label="Configuration" HasConfigurationCondition="false" />

@@ -28,6 +28,9 @@
         </EnumProperty.Metadata>
     </EnumProperty>
 
+    <StringProperty Name="CommandLineArgs" DisplayName="Аргументы командной строки" Category="StartOptions" F1Keyword="javascript.project.property.debugging.commandlineargs" Description="Разрешает указывать аргументы командной строки, которые передаются в запуск приложения UWP">
+    </StringProperty>
+
     <StringProperty Name="RealOsVersion" Visible="false">
         <StringProperty.DataSource>
             <DataSource Persistence="ProjectFile" Label="Configuration" HasConfigurationCondition="false"/>

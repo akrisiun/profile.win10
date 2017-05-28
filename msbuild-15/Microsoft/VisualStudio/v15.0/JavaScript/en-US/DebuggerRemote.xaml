@@ -54,6 +54,14 @@
   </EnumProperty>
 
   <StringProperty
+    Name="CommandLineArgs"
+    DisplayName="Command Line Arguments"
+    Category="StartOptions"
+    F1Keyword="javascript.project.property.debugging.commandlineargs"
+    Description="Allows the specification of command line arguments that are passed to the launch of the UWP app">
+  </StringProperty>
+
+  <StringProperty
     Name="MachineName"
     DisplayName="Machine Name"
     Category="RemoteOptions"

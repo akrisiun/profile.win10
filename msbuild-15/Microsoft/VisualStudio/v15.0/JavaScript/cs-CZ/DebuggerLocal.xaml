@@ -28,4 +28,7 @@
       <NameValuePair Name="IsDebugType" Value="true"/>
     </EnumProperty.Metadata>
   </EnumProperty>
+
+  <StringProperty Name="CommandLineArgs" DisplayName="Argumenty příkazového řádku" Category="StartOptions" F1Keyword="javascript.project.property.debugging.commandlineargs" Description="Umožňuje zadání argumentů příkazového řádku, které se předají při spuštění aplikace pro UPW.">
+  </StringProperty>
 </Rule>

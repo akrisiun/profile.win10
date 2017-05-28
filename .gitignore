@@ -2,3 +2,8 @@
 Packages/
 .vs*/
 .nuget/
+msbuild-15/VS2017/Msbuild/Microsoft/15.0/Bin/*.dll
+msbuild-15/VS2017/Msbuild/Microsoft/15.0/Bin/*.exe
+msbuild-15/VS2017/Msbuild/Microsoft/VisualStudio/v15.0/TypeScript/
+msbuild-15/VS2017/Msbuild/Microsoft/15.0/Bin/10*/
+msbuild-15/VS2017/Msbuild/Microsoft/15.0/Bin/2*/

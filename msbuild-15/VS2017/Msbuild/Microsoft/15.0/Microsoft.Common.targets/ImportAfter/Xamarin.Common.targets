@@ -1,0 +1,7 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<Target Name="_CleanMdbFiles" AfterTargets="CoreClean" Condition="Exists('$(TargetPath).mdb')">
+		<Delete Files="$(TargetPath).mdb" TreatErrorsAsWarnings="true" />
+	</Target>
+
+</Project>

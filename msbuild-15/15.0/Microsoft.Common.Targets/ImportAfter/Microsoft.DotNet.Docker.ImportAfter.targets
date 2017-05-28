@@ -15,11 +15,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <DotNetDockerTargets 
-      Condition=" '$(DotNetDockerTargets)' == '' "
-      >$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Docker\Microsoft.DotNet.Docker.targets</DotNetDockerTargets>
+    <DotNetDockerTargets Condition=" '$(DotNetDockerTargets)' == '' ">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Docker\Microsoft.DotNet.Docker.targets</DotNetDockerTargets>
   </PropertyGroup>
 
-  <!--  <Import Project="$(DotNetDockerTargets)" Condition="Exists('$(DotNetDockerTargets)')" /> -->
+  <Import Project="$(DotNetDockerTargets)" Condition="Exists('$(DotNetDockerTargets)')" />
 
 </Project>
