@@ -32,14 +32,29 @@ gitextensions install manually, no visual studio plugins please
 ### 5. setup PATH, TEMP
 
 ```
-PATH=c:\bin;c:\System;c:\Program Files\Git\bin\;d:\tools;%USERPROFILE%\AppData\Local\Microsoft\WindowsApps;C:\Program Files\kdiff3
+PATH=c:\bin;c:\System;c:\Program Files\Git\bin\;d:\tools;%USERPROFILE%\AppData\Local\Microsoft\WindowsApps;
+C:\Program Files\kdiff3
+
 TEMP=c:\Temp
+
+write-host $env:path
+new-item -type directory c:\bin\tools
+$env:Path = "c:\bin;c:\bin\tools;" + $env:Path
+write-host $env:path
+refreshenv
+write-host $env:path
 ```
 
 GIT:
 ```
-git config core.whitespace nowarn
-git config core.filemode false
+git config --global core.whitespace nowarn
+git config --global core.filemode false
+
+ps$>
+write-host $env:programfiles
+ls $env:Programfiles\git\bin\*
+& $env:Programfiles\git\bin\git.exe config --global core.whitespace nowarn
+& $env:Programfiles\git\bin\git.exe config --global core.filemode false
 ```
 
 ### 6. Visual Studio
@@ -80,6 +95,12 @@ C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET Web Pages\v2.0\Assemblies\
 MSBUILD 14.0\
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\
 Common7\IDE\CommonExtensions\Microsoft\TestWindow\
+
+### 9. Rdpd/Vnc
+
+```
+choco install realvnc
+```
 
 ### Virtual machines
 
