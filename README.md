@@ -1,7 +1,13 @@
 Other links:  
 [powershell](powershell.md)
 
-## profile.win10
+## Hipernate from command line:
+```
+shutdown /h /f 
+shutdown /h | ping -n 20 127.0.0.1 > NUL 2>&1 && shutdown /h /f
+```
+
+# Profile.win10
 Setup tasks for empty Windows 10
 
 1. install/reset windows  
