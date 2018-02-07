@@ -4,7 +4,7 @@ Other links:
 ## Hipernate from command line:
 ```
 shutdown /h /f 
-shutdown /h | ping -n 20 127.0.0.1 > NUL 2>&1 && shutdown /h /f
+ping -n 7 127.0.0.1 > NUL 2>&1 && shutdown /h /f
 ```
 
 # Profile.win10
@@ -21,6 +21,26 @@ PowerShell.exe -ExecutionPolicy Unrestricted
 @powershell 
 iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
 ```
+
+### 3B. dotnet + dotnet $env:PATH
+
+```
+https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.1.2-sdk-download.md
+SDK 2.1.2 for x64 installer download/run
+
+powershell
+$env:PATH="c:\Program files\dotnet;$env:PATH"
+
+refreshenv
+write-Host $env:PATH
+
+dotnet --info
+
+```
+
+## 3C. docker
+
+VirtualBox + Docker for Windows (moby docker)
 
 ### 4. choco install tasks  
 
