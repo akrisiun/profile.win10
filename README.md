@@ -29,6 +29,8 @@ https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.1.2
 SDK 2.1.2 for x64 installer download/run
 
 powershell
+new-item -type directory c:\bin
+#mkdir c:\bin
 $env:PATH="c:\Program files\dotnet;$env:PATH"
 
 refreshenv
