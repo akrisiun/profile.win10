@@ -3,6 +3,8 @@ using System.Diagnostics;
 
 namespace Dotnet
 {
+    using Dotnet.IISTest;
+    
     public class Run
     {
         [STAThread]
