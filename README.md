@@ -40,11 +40,7 @@ dotnet --info
 
 ```
 
-## 3C. docker
-
-VirtualBox + Docker for Windows (moby docker)
-
-### 4. choco install tasks  
+### 3. choco install tasks  
 
 `choco install -y conemu`
 finally open real console conemu 
@@ -54,8 +50,18 @@ choco feature enable -n=allowGlobalConfirmation
 
 choco install git kdiff3
 choco install git-credential-manager-for-windows
+
+git config core.filemode false
 ```
 gitextensions install manually, no visual studio plugins please
+
+## 4. git config
+
+```
+# How do I remove files saying “old mode 100755 new mode 100644” 
+
+```
+
 
 ### 5. setup PATH, TEMP
 
