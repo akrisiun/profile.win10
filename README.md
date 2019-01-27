@@ -37,7 +37,6 @@ refreshenv
 write-Host $env:PATH
 
 dotnet --info
-
 ```
 
 ### 3. choco install tasks  
@@ -59,6 +58,10 @@ gitextensions install manually, no visual studio plugins please
 
 ```
 # How do I remove files saying “old mode 100755 new mode 100644” 
+git config core.filemode false
+
+git config --global core.whitespace nowarn
+git config --global core.filemode false
 
 ```
 
@@ -79,10 +82,6 @@ refreshenv
 write-host $env:path
 ```
 
-GIT:
-```
-git config --global core.whitespace nowarn
-git config --global core.filemode false
 
 ps$>
 write-host $env:programfiles
@@ -95,7 +94,7 @@ ls $env:Programfiles\git\bin\*
 
 ```
 choco install notepadplusplus.install visualstudiocode
-choco install netfx-4.5.1-devpack netfx-4.5.2-devpack
+choco install netfx-4.5.1-devpack netfx-4.5.2-devpack dotnet4.6.1-devpack netfx-4.7.1-devpack
 
 # choco install -f -y netfx-4.5.1-devpack netfx-4.5.2-devpack dotnet4.6-targetpack microsoft-build-tools dotnet4.6.1-devpack
 
@@ -107,6 +106,8 @@ choco install vsredist2013 windows-sdk-8.1
 choco install windows-sdk-10.0
 choco install dotnet4.6-targetpack microsoft-build-tools 
 choco install dotnet4.6.1-devpack
+choco install dotnet4.7.1
+choco install netfx-4.7.1-devpack
 
 choco install dotnetcore-sdk -y
 ```
