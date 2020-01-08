@@ -18,15 +18,15 @@ Setup tasks for empty Windows 10
 run cmd as admin  
 ```
 PowerShell.exe -ExecutionPolicy Unrestricted
-@powershell 
 iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
 ```
 
-### 3B. dotnet + dotnet $env:PATH
+### 3b. dotnet + dotnet $env:PATH
 
 ```
-https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.1.2-sdk-download.md
-SDK 2.1.2 for x64 installer download/run
+https://github.com/dotnet/core/blob/master/release-notes/3.1/3.1.0/3.1.0.md
+SDK LTS for x64 installer download/run
+Core SDK 3.1.100
 
 powershell
 new-item -type directory c:\bin
@@ -65,7 +65,6 @@ git config --global core.filemode false
 
 ```
 
-
 ### 5. setup PATH, TEMP
 
 ```
@@ -80,8 +79,6 @@ $env:Path = "c:\bin;c:\bin\tools;" + $env:Path
 write-host $env:path
 refreshenv
 write-host $env:path
-```
-
 
 ps$>
 write-host $env:programfiles
@@ -114,7 +111,10 @@ choco install dotnetcore-sdk -y
 
 ### 7. SQL Server 
 
-Sqlserver 1.04 GB, SSME 2012 825MB :( 
+Sqlserver 1.04 GB,   
+SSME  
+https://chocolatey.org/packages/sql-server-management-studio  
+
 ```
 choco install mssqlserver2012express sql-server-management-studio
 // only ssme ??? 
@@ -123,13 +123,9 @@ choco install sql-server-management-studio
 
 ### 8. IIS
 
-MVC5 fix:
-C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies\
-C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET Web Pages\v2.0\Assemblies\
-
-MSBUILD 14.0\
-C:\Program Files (x86)\Microsoft Visual Studio 14.0\
-Common7\IDE\CommonExtensions\Microsoft\TestWindow\
+MVC5 fix:  
+C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies\  
+C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET Web Pages\v2.0\Assemblies\  
 
 ### 9. Rdpd/Vnc
 
@@ -137,14 +133,8 @@ Common7\IDE\CommonExtensions\Microsoft\TestWindow\
 choco install realvnc
 ```
 
-### Virtual machines
+### Docker for Win
 
-Docker: https://github.com/phusion/baseimage-docker#running_startup_scripts
-
-https://github.com/tmatilai/vagrant-proxyconf
-
-Vagrant proxy
-vagrant plugin install ./vagrant-proxyconf*.gem --verbose
-
-vagrant plugin install vagrant-proxyconf
-vagrant plugin install vagrant-omnibus
+https://hub.docker.com/?overlay=onboarding - download (https://docs.docker.com/docker-for-windows/install/)
+https://docs.docker.com/docker-for-windows/ - docs
+Docker: https://github.com/phusion/baseimage-docker#running_startup_scripts - baseimage-docker minimal Ubuntu base image 
