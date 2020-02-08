@@ -41,16 +41,17 @@ dotnet --info
 
 ### 3. choco install tasks  
 
-`choco install -y conemu`
-finally open real console conemu 
 ```
+choco feature enable -n allowGlobalConfirmation
+
+choco install -y notepadplusplus
+choco install -y conemu
+
 choco feature list
 choco feature enable -n=allowGlobalConfirmation
 
 choco install git kdiff3
 choco install git-credential-manager-for-windows
-
-git config core.filemode false
 ```
 gitextensions install manually, no visual studio plugins please
 
@@ -58,11 +59,10 @@ gitextensions install manually, no visual studio plugins please
 
 ```
 # How do I remove files saying “old mode 100755 new mode 100644” 
-git config core.filemode false
-
 git config --global core.whitespace nowarn
 git config --global core.filemode false
 
+git config core.filemode false
 ```
 
 ### 5. setup PATH, TEMP
