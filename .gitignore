@@ -12,3 +12,4 @@ msbuild-15/VS2017/Msbuild/Microsoft/15.0/Bin/2*/
 iis/dotnet/obj/
 *.zip
 COPYING.DOC
+*.exe
