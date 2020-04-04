@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+    <AssemblyName>ProxyKit.Simple</AssemblyName>
+    <RootNamespace>ProxyKit</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="src\ProxyKit.Lib\bin\**" />
+    <Compile Remove="src\ProxyKit.Lib\obj\**" />
+    <Compile Remove="vendor\**" />
+    <Content Remove="src\ProxyKit.Lib\bin\**" />
+    <Content Remove="src\ProxyKit.Lib\obj\**" />
+    <Content Remove="vendor\**" />
+    <EmbeddedResource Remove="src\ProxyKit.Lib\bin\**" />
+    <EmbeddedResource Remove="src\ProxyKit.Lib\obj\**" />
+    <EmbeddedResource Remove="vendor\**" />
+    
+    <None Remove="src\ProxyKit.Lib\bin\**" />
+    <None Remove="src\ProxyKit.Lib\obj\**" />
+    <None Remove="vendor\**" />
+    <None Remove="**\*.nupkg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="src\ProxyKit.Lib\ApplicationBuilderExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\Simple\" />
+  </ItemGroup>
+
+</Project>
