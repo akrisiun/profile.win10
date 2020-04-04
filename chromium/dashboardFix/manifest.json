@@ -1,7 +1,7 @@
 {
-  "name": "Chromium-JiraDashboard",
-  "version": "1.0",
-  "description": "Build an Extension!",
+  "name": "Chromium-JiraDashboard v2",
+  "version": "1.2",
+  "description": "My extension!",
   "permissions": ["activeTab", "declarativeContent", "storage"],
   "options_page": "options.html",
   "background": {
