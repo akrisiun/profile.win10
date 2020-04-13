@@ -5,7 +5,7 @@
     
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
-    <AssemblyName>ProxyKit.Simple</AssemblyName>
+    <AssemblyName>ProxyKit</AssemblyName>
     <RootNamespace>ProxyKit</RootNamespace>
   </PropertyGroup>
 

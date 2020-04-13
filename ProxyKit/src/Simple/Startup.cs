@@ -45,6 +45,7 @@ namespace ProxyKit
         
         public void Configure3(IApplicationBuilder app)
         {
+            /*
                 var ipNetwork = IPNetwork.Parse("10.0.0.1", "255.255.255.0");
 
                 app.RunProxy(context =>
@@ -57,6 +58,7 @@ namespace ProxyKit
                         return Task.FromResult(response);
                     }
                });
+            */
        }
 
     }
